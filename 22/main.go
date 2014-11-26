@@ -6,9 +6,12 @@ import (
 )
 
 func pow(x, n, lim float64) float64 {
-	fmt.Println(math.Pow(x, n))
+	// fmt.Println(math.Pow(x, n))
 	if v := math.Pow(x, n); v < lim {
+		fmt.Printf("%g < %g\n", v, lim)
 		return v
+	} else {
+		fmt.Printf("%g >= %g\n", v, lim)
 	}
 	return lim
 }
