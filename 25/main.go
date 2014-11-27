@@ -5,12 +5,11 @@ import "fmt"
 type Vertex struct {
 	X int
 	Y int
-	Z string
-	A bool
 }
 
 func main() {
-	v := Vertex{1, 2, "test", false}
-	v.X = 4
-	fmt.Println(v.A)
+	p := Vertex{1, 2}
+	q := &p
+	q.X = 1e9
+	fmt.Println(p)
 }
