@@ -1,41 +1,38 @@
 package main
 
 import (
-	"io"
-	"log"
+	"fmt"
+	"io/ioutil"
 	"net/http"
 	"os"
+	"runtime"
 	"strings"
+	"sync"
 )
 
-func download(url string, saveFileName string) (err error) {
-	saveFile, err := os.Create(saveFileName)
+func download(url string, wg *sync.WaitGroup) {
+	defer wg.Done()
+	tmp := strings.Split(url, "/")
+	fileName := tmp[len(tmp)-1]
+	resp, err := http.Get(url)
 	if err != nil {
+		fmt.Println(err)
 		return
 	}
-	defer saveFile.Close()
-	response, err := http.Get(url)
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
+		fmt.Println(err)
 		return
 	}
-	defer response.Body.Close()
-
-	_, err = io.Copy(saveFile, response.Body)
-	if err != nil {
-		return
-	}
-	return
+	ioutil.WriteFile(fileName, body, 0644)
 }
-
 func main() {
-	for i, path := range os.Args {
-		if i != 0 {
-			tmp := strings.Split(path, "/")
-			log.Println(path)
-			err := download(path, tmp[len(tmp)-1])
-			if err != nil {
-				log.Fatal(err)
-			}
-		}
+	wg := new(sync.WaitGroup)
+	runtime.GOMAXPROCS(runtime.NumCPU())
+	for _, url := range os.Args[1:] {
+		wg.Add(1)
+		go download(url, wg)
 	}
+	wg.Wait()
 }
