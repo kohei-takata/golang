@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 )
 
 func download(url string, saveFileName string) (err error) {
@@ -14,6 +15,10 @@ func download(url string, saveFileName string) (err error) {
 	}
 	defer saveFile.Close()
 	response, err := http.Get(url)
+	if err != nil {
+		return
+	}
+	defer response.Body.Close()
 
 	_, err = io.Copy(saveFile, response.Body)
 	if err != nil {
@@ -23,9 +28,14 @@ func download(url string, saveFileName string) (err error) {
 }
 
 func main() {
-	url := "http://yukkurisinai.net/gopher.png"
-	err := download(url, "gopher.png")
-	if err != nil {
-		log.Fatal(err)
+	for i, path := range os.Args {
+		if i != 0 {
+			tmp := strings.Split(path, "/")
+			log.Println(path)
+			err := download(path, tmp[len(tmp)-1])
+			if err != nil {
+				log.Fatal(err)
+			}
+		}
 	}
 }
