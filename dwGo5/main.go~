@@ -29,7 +29,6 @@ func download(url string, wg *sync.WaitGroup) {
 	ioutil.WriteFile(fileName, body, 0644)
 }
 func main() {
-
 	app := cli.NewApp()
 	app.Name = "download"
 	app.Usage = "download"

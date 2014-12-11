@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/codegangsta/cli"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -29,17 +28,11 @@ func download(url string, wg *sync.WaitGroup) {
 	ioutil.WriteFile(fileName, body, 0644)
 }
 func main() {
-	app := cli.NewApp()
-	app.Name = "download"
-	app.Usage = "download"
-	app.Action = func(c *cli.Context) {
-		wg := new(sync.WaitGroup)
-		runtime.GOMAXPROCS(runtime.NumCPU())
-		for _, url := range os.Args[1:] {
-			wg.Add(1)
-			go download(url, wg)
-		}
-		wg.Wait()
+	wg := new(sync.WaitGroup)
+	runtime.GOMAXPROCS(runtime.NumCPU())
+	for _, url := range os.Args[1:] {
+		wg.Add(1)
+		go download(url, wg)
 	}
-	app.Run(os.Args)
+	wg.Wait()
 }
