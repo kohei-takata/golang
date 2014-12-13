@@ -17,7 +17,7 @@ func main() {
 	a = f
 	a = &v
 
-	a = v
+	// a = v
 
 	fmt.Println(a.Abs())
 }
